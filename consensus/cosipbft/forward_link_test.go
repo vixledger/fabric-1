@@ -170,7 +170,7 @@ func TestChainFactory_FromProto(t *testing.T) {
 	require.NotNil(t, chain)
 
 	_, err = factory.FromProto(&empty.Empty{})
-	require.EqualError(t, err, "message type not supported: *empty.Empty")
+	require.EqualError(t, err, "message type not supported: *emptypb.Empty")
 
 	chainpb.Links[0].Prepare = &any.Any{}
 	_, err = factory.FromProto(chainpb)
@@ -201,7 +201,7 @@ func TestChainFactory_DecodeForwardLink(t *testing.T) {
 	require.NotNil(t, chain)
 
 	_, err = factory.DecodeForwardLink(&empty.Empty{})
-	require.EqualError(t, err, "unknown message type: *empty.Empty")
+	require.EqualError(t, err, "unknown message type: *emptypb.Empty")
 
 	factory.verifier = fakeVerifierWithFactory{}
 	forwardLink.Prepare = &any.Any{}

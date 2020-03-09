@@ -1,11 +1,12 @@
 package cosipbft
 
 import (
+	"fmt"
 	"testing"
 
-	proto "github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	any "github.com/golang/protobuf/ptypes/any"
+	"github.com/golang/protobuf/ptypes/any"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/stretchr/testify/require"
@@ -17,7 +18,22 @@ import (
 	"go.dedis.ch/fabric/mino"
 	"go.dedis.ch/fabric/mino/minoch"
 	"golang.org/x/xerrors"
+	nproto "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/prototest"
 )
+
+func TestMessages(t *testing.T) {
+	messages := []nproto.Message{
+		(*Prepare)(nil),
+		(*Commit)(nil),
+	}
+
+	for _, m := range messages {
+		t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			prototest.Message{}.Test(t, m.ProtoReflect().Type())
+		})
+	}
+}
 
 func TestConsensus_Basic(t *testing.T) {
 	manager := minoch.NewManager()
@@ -230,7 +246,7 @@ func TestHandler_HashPrepare(t *testing.T) {
 	}
 
 	_, err := h.Hash(&empty.Empty{})
-	require.EqualError(t, err, "message type not supported: *empty.Empty")
+	require.EqualError(t, err, "message type not supported: *emptypb.Empty")
 
 	empty, err := ptypes.MarshalAny(&empty.Empty{})
 	require.NoError(t, err)
@@ -326,7 +342,7 @@ func TestRPCHandler_Process(t *testing.T) {
 	}
 
 	resp, err := h.Process(&empty.Empty{})
-	require.EqualError(t, err, "message type not supported: *empty.Empty")
+	require.EqualError(t, err, "message type not supported: *emptypb.Empty")
 	require.Nil(t, resp)
 
 	resp, err = h.Process(&Propagate{})
